@@ -1,8 +1,9 @@
-var tasks = {};
+$(function () {});
 
 // variables
 
 var today = moment().format("dddd, MMMM Do");
+var now = moment().format("H A");
 
 $("#currentDay").text(today);
 
@@ -24,6 +25,7 @@ var enterWorkday = [
 
 var container = $ (".container") 
 
+
 // for loop for enterWorkday
 
 for (var i = 0; i < enterWorkday.length; i ++) {
@@ -37,8 +39,10 @@ for (var i = 0; i < enterWorkday.length; i ++) {
     var hour = $ ("<div>") .addClass("hour col-md-1").text(enterWorkday [i].time)
 
     // textarea for event using Bootstrap, adding description class from CSS, setting collumn length to 10/12 per Bootstrap
+    
+    var blockColor = colorRow();
 
-    var eventText = $ ("<textarea>") .addClass("description col-md-10").val(enterWorkday[i].event)
+    var eventText = $ ("<textarea>") .addClass("description col-md-10 " + blockColor).val(enterWorkday[i].event)
 
     // save button using Bootstrap, adding saveBtn class, setting collumn length to 1/12 per Bootstrap
 
@@ -46,7 +50,7 @@ for (var i = 0; i < enterWorkday.length; i ++) {
     // add icon, using fas fa-save class from Bootstrap
     var icon = $ ("<i>") .addClass("fas fa-save")
 
-    // append saveBtn, timeBlock and container (adds value)
+    // adds rows to container div by appending saveBtn, timeBlock and container (adds value)
 
     saveBtn.append (icon)
     timeBlock.append (hour)
@@ -54,6 +58,7 @@ for (var i = 0; i < enterWorkday.length; i ++) {
     timeBlock.append (saveBtn)
     container.append (timeBlock)
 }
+
 // end of for loop for enterWorkday
 
 // save event to storage
@@ -73,15 +78,24 @@ $ (".saveBtn").on("click",function() {
     localStorage.setItem(time, JSON.stringify(text))
 })
 
-// color rows based on time
 
-setInterval(function () {
-    var now = moment().format("h a");
-    $(".time-block").each(function() {
-        var block = $ (this).children(".hour")
-        if ()
-    })
+// color rows based on time
+function colorRow() {
+    var planNow = moment(now, "H A");
+    var planEntry = moment(hour, "H A");
+    
+    if (planNow.isBefore(planEntry)) {
+        return "future";
+    }
+    else if (planNow.isAfter(planEntry)) {
+        return "past";
+    }
+    else {
+        return "present";
+    }
 }
+
+
 
 // If i can't find it with moment.js, I can use 24 hour clock: moment ().hours ()
 // then create function to convert am/pm to 24 hr clock
