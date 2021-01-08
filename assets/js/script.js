@@ -76,7 +76,7 @@ $ (".saveBtn").on("click",function() {
     var time = $(this)
     .siblings(".hour").text()
 
-    // sets time and text items to local storage, converts object or value to a JSON strong
+    // sets time and text items to local storage, converts object or value to a JSON string
     localStorage.setItem(time, JSON.stringify(text))
 })
 
@@ -112,23 +112,23 @@ function setColor () {
 
         // establishes block1 variable based on the convertTime function with block parameter
     var block1 = convertTime(block)
-        // establishes now1 variable as 24-hour time based on moment.js
+        // establishes now1 variable as 24-hour time based on moment.js function
     var now1 = moment().hours()
     console.log(block1, now1);
 
-        // if current time is after time on workday scheduler
+        // if current time is after the time on workday scheduler
         if (block1 < now1) {
             $(this).addClass("past");
             $(this).removeClass("future");
             $(this).removeClass("present");
         }
-        // if current time is same as time on workday scheduler
+        // if current time is same as the time on workday scheduler
         else if (block1 === now1) {
             $(this).removeClass("past");
             $(this).addClass("present");
             $(this).removeClass("future");
         }
-        // if current time is before time on workday scheduler
+        // if current time is before the time on workday scheduler
         else {
             $(this).removeClass("present");
             $(this).removeClass("past");
