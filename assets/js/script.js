@@ -5,6 +5,8 @@ $(function () {});
 var today = moment().format("dddd, MMMM Do");
 var now = moment().format("H A");
 
+// display current day
+
 $("#currentDay").text(today);
 
 // entries for each hour of day and  // grab item from local storage --> will grab the time or event entry 
@@ -26,7 +28,7 @@ var enterWorkday = [
 var container = $ (".container") 
 
 
-// for loop for enterWorkday
+// for-loop for enterWorkday
 
 for (var i = 0; i < enterWorkday.length; i ++) {
 
@@ -39,15 +41,15 @@ for (var i = 0; i < enterWorkday.length; i ++) {
     var hour = $ ("<div>") .addClass("hour col-md-1").text(enterWorkday [i].time)
 
     // textarea for event using Bootstrap, adding description class from CSS, setting collumn length to 10/12 per Bootstrap
-    
-    var blockColor = colorRow();
 
-    var eventText = $ ("<textarea>") .addClass("description col-md-10 " + blockColor).val(enterWorkday[i].event)
+    var eventText = $ ("<textarea>") .addClass("description col-md-10").val(enterWorkday[i].event)
 
     // save button using Bootstrap, adding saveBtn class, setting collumn length to 1/12 per Bootstrap
 
     var saveBtn = $ ("<button>") .addClass("saveBtn col-md-1 btn")
+
     // add icon, using fas fa-save class from Bootstrap
+    
     var icon = $ ("<i>") .addClass("fas fa-save")
 
     // adds rows to container div by appending saveBtn, timeBlock and container (adds value)
@@ -78,25 +80,66 @@ $ (".saveBtn").on("click",function() {
     localStorage.setItem(time, JSON.stringify(text))
 })
 
+// converts time to 24-hour clock
 
-// color rows based on time
-function colorRow() {
-    var planNow = moment(now, "H A");
-    var planEntry = moment(hour, "H A");
-    
-    if (planNow.isBefore(planEntry)) {
-        return "future";
+        // function to convert time based on the time parameter
+function convertTime (time) {
+
+    // "9 AM" --> ["9", "AM"], parse the integer 9 to make sure it is not a string
+    var newTime = parseInt(time.split(" ")[0]) // [0] refers to H of "H A"
+    // sets newtime at 12 PM
+    if (time === "12 PM") {
+        newTime = 12
     }
-    else if (planNow.isAfter(planEntry)) {
-        return "past";
-    }
-    else {
-        return "present";
-    }
+
+    // sets newTime for after 12 PM
+    else if (time.split(" ")[1]==="PM"){ // [1] refers to A of "H A"
+        newTime = newTime +12 
+       }
+    // sets newTime for before 12 PM
+    return newTime
 }
 
+// color rows based on time
 
+function setColor () {
 
-// If i can't find it with moment.js, I can use 24 hour clock: moment ().hours ()
-// then create function to convert am/pm to 24 hr clock
-// .split (" ") will separate string into array ["9", "AM"]
+    // function for each .time-block class
+    $(".time-block").each(function() {
+
+        //establishes block variable based on the time in the .hour class
+    var block = $ (this).children(".hour").text()
+
+        // establishes block1 variable based on the convertTime function with block parameter
+    var block1 = convertTime(block)
+        // establishes now1 variable as 24-hour time based on moment.js
+    var now1 = moment().hours()
+    console.log(block1, now1);
+
+        // if current time is after time on workday scheduler
+        if (block1 < now1) {
+            $(this).addClass("past");
+            $(this).removeClass("future");
+            $(this).removeClass("present");
+        }
+        // if current time is same as time on workday scheduler
+        else if (block1 === now1) {
+            $(this).removeClass("past");
+            $(this).addClass("present");
+            $(this).removeClass("future");
+        }
+        // if current time is before time on workday scheduler
+        else {
+            $(this).removeClass("present");
+            $(this).removeClass("past");
+            $(this).addClass("future");
+        }
+    })
+}
+
+// run the setColor function
+
+setColor ();
+
+//re-run the setColor function every minute
+setInterval(setColor, 60000);
